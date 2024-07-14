@@ -76,12 +76,12 @@ def predict_image(file):
 st.title("Chest X-ray Pneumonia Detection")
 
 # Sidebar
-st.sidebar.title("Prediction Label")
-st.sidebar.write("Choose an image to predict:")
-st.sidebar.write("- 'Normal' for Normal lungs")
-st.sidebar.write("- 'Pneumonia' for Pneumonia affected lungs")
+st.sidebar.title("Label Prediksi")
+st.sidebar.write("Pilih gambar untuk diprediksi:")
+st.sidebar.write("- 'Normal' untuk Paru-paru Normal")
+st.sidebar.write("- 'Pneumonia' untuk Paru-paru yang Terkena Pneumonia")
 
-file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
+file = st.file_uploader("Upload Gambar Yang Ingin Diprediksi", type=["jpg", "jpeg", "png"])
 
 if file is not None:
     file_path = os.path.join(UPLOAD_FOLDER, file.name)
@@ -89,15 +89,16 @@ if file is not None:
         f.write(file.getbuffer())
     st.image(file_path, caption='Uploaded Image', use_column_width=True)
     st.write("")
-    st.write("Classifying...")
+    st.write("Hasil Prediksi :")
     prediction, description, probabilities = predict_image(file_path)
     if prediction:
         st.write(f"Prediction: {prediction}")
         st.write(description)
 
-        # Display prediction probabilities in sidebar
-        st.sidebar.write("### Prediction Probabilities")
-        st.sidebar.write("- Normal:", probabilities[0])
-        st.sidebar.write("- Pneumonia:", probabilities[1])
+        # Tampilkan probabilitas prediksi di sidebar
+    st.sidebar.write("### Probabilitas Prediksi")
+    st.sidebar.write("- Normal:", probabilities[0])
+    st.sidebar.write("- Pneumonia:", probabilities[1])
 
-        st.sidebar.write(f"Prediction: {prediction}")
+    st.sidebar.write(f"Prediksi: {prediction}")
+
