@@ -12,6 +12,10 @@ from streamlit_folium import st_folium
 # Load the trained model
 model = load_model('prediksi_pneumonia.h5')
 
+# Create uploads directory if it doesn't exist
+UPLOADS_PATH = "uploads"
+os.makedirs(UPLOADS_PATH, exist_ok=True)
+
 # Function to load and preprocess the image
 def load_and_preprocess_image(file):
     try:
@@ -74,16 +78,6 @@ def predict_image(file):
         st.error(f"Error during prediction: {e}")
         return None, None, None
 
-# # Sidebar menu
-# with st.sidebar:
-#     selected = option_menu(
-#         menu_title="Main Menu",  # Wajib
-#         options=["Beranda", "Prediksi", "Kontak"],  # Wajib
-#         icons=["house", "book", "envelope"],  # Wajib
-#         menu_icon="cast",
-#         default_index=0,
-#     )
-
 # Menu horizontal
 selected = option_menu(
     menu_title="Menu Utama",  # Wajib
@@ -137,7 +131,7 @@ elif selected == "Prediksi":
     file = st.file_uploader("Upload Gambar X-ray Dada", type=["jpg", "jpeg", "png"])
     
     if file is not None:
-        file_path = os.path.join("uploads", file.name)
+        file_path = os.path.join(UPLOADS_PATH, file.name)
         with open(file_path, "wb") as f:
             f.write(file.getbuffer())
         st.image(file_path, caption='Gambar yang Diunggah', use_column_width=True)
@@ -204,4 +198,3 @@ if selected == "About Us":
     st.write("""
     Kami adalah tim pengembang yang berdedikasi untuk menyediakan solusi kesehatan berbasis teknologi. Aplikasi deteksi pneumonia ini dirancang untuk membantu dalam diagnosis dini dan pengelolaan pneumonia, memanfaatkan teknologi pemrosesan gambar dan machine learning untuk mendeteksi tanda-tanda pneumonia pada gambar X-ray dada. Kami berharap aplikasi ini dapat memberikan kontribusi positif bagi masyarakat dalam menangani masalah kesehatan secara lebih efektif dan efisien.
     """)
-
