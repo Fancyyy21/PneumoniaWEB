@@ -1,21 +1,21 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
 import os
 
+import folium
+from streamlit_folium import st_folium
+
 # Load the trained model
 model = load_model('prediksi_pneumonia.h5')
 
-# Define the path to save uploaded images
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
+# Function to load and preprocess the image
 def load_and_preprocess_image(file):
     try:
-        img = image.load_img(file, target_size=(150, 150))  # Adjust target size if necessary
+        img = image.load_img(file, target_size=(150, 150))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         x /= 255.0  # Normalize the image data
@@ -24,6 +24,7 @@ def load_and_preprocess_image(file):
         st.error(f"Error loading image: {e}")
         return None
 
+# Function to get description based on the label
 def get_description(label):
     if label == 'PNEUMONIA':
         return (
@@ -52,6 +53,7 @@ def get_description(label):
     else:
         return "Deskripsi tidak tersedia untuk label yang diberikan."
 
+# Function to predict the image
 def predict_image(file):
     try:
         x = load_and_preprocess_image(file)
@@ -72,32 +74,134 @@ def predict_image(file):
         st.error(f"Error during prediction: {e}")
         return None, None, None
 
-# Streamlit app
-st.title("Chest X-ray Pneumonia Detection")
+# # Sidebar menu
+# with st.sidebar:
+#     selected = option_menu(
+#         menu_title="Main Menu",  # Wajib
+#         options=["Beranda", "Prediksi", "Kontak"],  # Wajib
+#         icons=["house", "book", "envelope"],  # Wajib
+#         menu_icon="cast",
+#         default_index=0,
+#     )
 
-# Sidebar
-st.sidebar.title("Label Prediksi")
-st.sidebar.write("Pilih gambar untuk diprediksi:")
-st.sidebar.write("- 'Normal' untuk Paru-paru Normal")
-st.sidebar.write("- 'Pneumonia' untuk Paru-paru yang Terkena Pneumonia")
+# Menu horizontal
+selected = option_menu(
+    menu_title="Menu Utama",  # Wajib
+    options=["Beranda", "Prediksi", "Kontak", "About Us"],  # Wajib
+    icons=["house", "book", "envelope", "person"],  # Opsional
+    menu_icon="cast",  # Opsional
+    default_index=0,  # Opsional
+    orientation="horizontal"
+)
 
-file = st.file_uploader("Upload Gambar Yang Ingin Diprediksi", type=["jpg", "jpeg", "png"])
+if selected == "Beranda":
+    st.title("Selamat Datang di Deteksi Pneumonia")
+    st.write("""
+    Aplikasi web ini menggunakan pembelajaran mesin untuk memprediksi pneumonia dari gambar X-ray dada.
+    
+    Fitur:
+    - Unggah gambar X-ray dada
+    - Dapatkan prediksi instan
+    - Antarmuka yang mudah digunakan
+    
+    ### Informasi Tentang Paru-paru Normal dan Pneumonia
+    
+    **Paru-paru Normal:**
+    Paru-paru yang sehat berfungsi untuk menyediakan oksigen ke darah dan membuang karbon dioksida. Gambar X-ray dada dari paru-paru yang sehat biasanya menunjukkan jaringan yang transparan dan homogen tanpa adanya bercak putih atau bayangan yang menunjukkan adanya cairan atau infeksi.
 
-if file is not None:
-    file_path = os.path.join(UPLOAD_FOLDER, file.name)
-    with open(file_path, "wb") as f:
-        f.write(file.getbuffer())
-    st.image(file_path, caption='Uploaded Image', use_column_width=True)
-    st.write("")
-    st.write("Hasil Prediksi :")
-    prediction, description, probabilities = predict_image(file_path)
-    if prediction:
-        st.write(f"Prediction: {prediction}")
-        st.write(description)
+    **Paru-paru dengan Pneumonia:**
+    Pneumonia adalah infeksi yang menyebabkan peradangan di kantung udara di salah satu atau kedua paru-paru. Kantung udara bisa terisi dengan cairan atau nanah, menyebabkan batuk dengan dahak atau nanah, demam, menggigil, dan kesulitan bernapas. Pada gambar X-ray, pneumonia dapat terlihat sebagai bercak putih atau bayangan yang menunjukkan adanya konsolidasi atau cairan di paru-paru. 
 
-        # Tampilkan probabilitas prediksi di sidebar
-    st.sidebar.write("### Probabilitas Prediksi")
-    st.sidebar.write("- Normal:", probabilities[0])
-    st.sidebar.write("- Pneumonia:", probabilities[1])
+    **Gejala Pneumonia:**
+    - Batuk yang dapat menghasilkan dahak
+    - Demam, berkeringat, dan menggigil
+    - Sesak napas
+    - Nyeri dada yang semakin parah saat bernapas dalam atau batuk
+    - Kelelahan dan kelelahan umum
+    
+    **Penyebab Pneumonia:**
+    Pneumonia dapat disebabkan oleh berbagai organisme, termasuk bakteri, virus, dan jamur. Penyebab umum meliputi Streptococcus pneumoniae (bakteri), virus influenza, dan jamur seperti Pneumocystis jirovecii.
 
-    st.sidebar.write(f"Prediksi: {prediction}")
+    **Pencegahan Pneumonia:**
+    - Vaksinasi: Vaksin pneumokokus dan vaksin influenza dapat membantu mencegah beberapa jenis pneumonia.
+    - Kebersihan: Mencuci tangan secara teratur dan menjaga kebersihan dapat mencegah penyebaran infeksi.
+    - Gaya Hidup Sehat: Tidak merokok, menjaga kebugaran tubuh, dan menghindari paparan polusi udara dapat membantu menjaga kesehatan paru-paru.
+    """)
+
+
+elif selected == "Prediksi":
+    st.title("Deteksi Pneumonia")
+    st.write("Unggah gambar X-ray dada untuk mendapatkan prediksi.")
+    
+    # File uploader
+    file = st.file_uploader("Upload Gambar X-ray Dada", type=["jpg", "jpeg", "png"])
+    
+    if file is not None:
+        file_path = os.path.join("uploads", file.name)
+        with open(file_path, "wb") as f:
+            f.write(file.getbuffer())
+        st.image(file_path, caption='Gambar yang Diunggah', use_column_width=True)
+        st.write("")
+        st.write("Hasil Prediksi:")
+        prediction, description, probabilities = predict_image(file_path)
+        
+        if prediction:
+            if prediction == "Normal":
+                st.success(f"Prediksi: {prediction}")
+                st.sidebar.success(f"Prediksi: {prediction}")
+            else:
+                st.error(f"Prediksi: {prediction}")
+                st.sidebar.error(f"Prediksi: {prediction}")
+            
+            st.write(description)
+            
+            # Tampilkan probabilitas prediksi di sidebar
+            st.sidebar.write("### Probabilitas Prediksi")
+            st.sidebar.write(f"- Normal: {probabilities[0]:.2f}")
+            st.sidebar.write(f"- Pneumonia: {probabilities[1]:.2f}")
+
+
+if selected == "Kontak":
+    st.title("Hubungi Kami")
+    st.write("Untuk pertanyaan lebih lanjut, silakan hubungi kami di:")
+    st.write("""
+    - Email: support@deteksi-pneumonia.com
+    - Telepon: +62 123 456 789
+    - Alamat: Jl. Sariasih No.54, Sarijadi, Kec. Sukasari, Kota Bandung, Jawa Barat 40151
+    """)
+
+    # Tentukan lokasi yang akan ditunjukkan pada peta
+    location = [-6.874454127785651, 107.57568906598382]  # Koordinat untuk Bandung, Indonesia
+
+    # Buat peta dengan Folium
+    m = folium.Map(location=location, zoom_start=15)
+
+    # Tambahkan marker pada peta
+    folium.Marker(location, popup="Jl. Sariasih No.54, Sarijadi, Kec. Sukasari, Kota Bandung, Jawa Barat 40151").add_to(m)
+
+    # Tampilkan peta dengan streamlit-folium
+    st_folium(m, width=700, height=500)
+
+
+if selected == "About Us":
+    st.title("Tentang Kami")
+    st.write("""
+    ### Developer Aplikasi Deteksi Pneumonia
+
+    **Nama:** Maulana Imanulhaq Nurdiana  
+    **NPM:** 1214078
+    """)
+    
+    st.image("aboutus/maul.jpeg", caption='Maulana Imanulhaq Nurdiana', width=150)
+
+    st.write("""
+    **Nama:** Raul Mahya Komaran  
+    **NPM:** 1214053
+    """)
+    
+    st.image("aboutus/raul.png", caption='Raul Mahya Komaran', width=150)
+
+    st.write("""
+    Kami adalah tim pengembang yang berdedikasi untuk menyediakan solusi kesehatan berbasis teknologi. Aplikasi deteksi pneumonia ini dirancang untuk membantu dalam diagnosis dini dan pengelolaan pneumonia, memanfaatkan teknologi pemrosesan gambar dan machine learning untuk mendeteksi tanda-tanda pneumonia pada gambar X-ray dada. Kami berharap aplikasi ini dapat memberikan kontribusi positif bagi masyarakat dalam menangani masalah kesehatan secara lebih efektif dan efisien.
+    """)
+
