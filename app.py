@@ -197,7 +197,7 @@ if selected == "About Us":
 
     st.write("""
     **Nama:** Raul Mahya Komaran  
-    **NPM:** 1214054
+    **NPM:** 1214053
     """)
     
     st.image("aboutus/raul.png", caption='Raul Mahya Komaran', width=150)
