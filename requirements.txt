@@ -1,18 +1,8 @@
-# streamlit
-# tensorflow
-# pillow
-# numpy
-# streamlit-folium
-# folium
-# scikit-image
-# streamlit_option_menu
-
-streamlit==0.94.0
-tensorflow==2.7.0
-numpy==1.21.5
-Pillow==8.4.0
-matplotlib==3.5.1
-scikit-learn==1.0
-tensorflow-addons==0.15.0
-folium==0.12.1
-streamlit_folium==0.5.0
+streamlit==1.35.0
+tensorflow
+pillow
+numpy
+streamlit-folium
+folium
+scikit-image
+streamlit_option_menu
