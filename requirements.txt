@@ -2,3 +2,8 @@ streamlit
 tensorflow
 pillow
 numpy
+streamlit-folium
+scikit-image
+scipy
+h5py
+matplotlib
