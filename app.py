@@ -137,29 +137,33 @@ if selected == "Prediksi":
     file = st.file_uploader("Upload Gambar Yang Ingin Diprediksi", type=["jpg", "jpeg", "png"])
 
     if file is not None:
-        file_path = os.path.join("uploads", file.name)
-        with open(file_path, "wb") as f:
-            f.write(file.getbuffer())
-        st.image(file_path, caption='Uploaded Image', use_column_width=True)
-        st.write("")
-        st.write("Hasil Prediksi :")
-        prediction, description, probabilities = predict_image(file_path)
-        
-        if prediction:
-            if prediction == "Normal":
-                st.success(f"Prediction: {prediction}")
-                st.sidebar.success(f"Prediksi: {prediction}")
-            else:
-                st.error(f"Prediction: {prediction}")
-                st.sidebar.error(f"Prediksi: {prediction}")
+        try:
+            file_path = os.path.join("uploads", file.name)
+            with open(file_path, "wb") as f:
+                f.write(file.getbuffer())
             
-            st.write(description)
+            st.image(file_path, caption='Uploaded Image', use_column_width=True)
+            st.write("")
+            st.write("Hasil Prediksi :")
+            prediction, description, probabilities = predict_image(file_path)
+            
+            if prediction:
+                if prediction == "Normal":
+                    st.success(f"Prediction: {prediction}")
+                    st.sidebar.success(f"Prediksi: {prediction}")
+                else:
+                    st.error(f"Prediction: {prediction}")
+                    st.sidebar.error(f"Prediksi: {prediction}")
+                
+                st.write(description)
 
-            # Display prediction probabilities in the sidebar
-            st.sidebar.write("### Probabilitas Prediksi")
-            st.sidebar.write(f"- Normal: {probabilities[0]:.2f}")
-            st.sidebar.write(f"- Pneumonia: {probabilities[1]:.2f}")
-
+                # Display prediction probabilities in the sidebar
+                st.sidebar.write("### Probabilitas Prediksi")
+                st.sidebar.write(f"- Normal: {probabilities[0]:.2f}")
+                st.sidebar.write(f"- Pneumonia: {probabilities[1]:.2f}")
+        
+        except Exception as e:
+            st.error(f"Error during prediction or file handling: {e}")
 
 
 if selected == "Kontak":
