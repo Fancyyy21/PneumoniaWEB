@@ -82,7 +82,7 @@ def predict_image(file):
 selected = option_menu(
     menu_title="Menu Utama",  # Wajib
     options=["Beranda", "Prediksi", "Kontak", "About Us"],  # Wajib
-    icons=["house", "book", "envelope", "person"],  # Opsional
+    icons=["house", "search", "envelope", "person"],  # Opsional
     menu_icon="cast",  # Opsional
     default_index=0,  # Opsional
     orientation="horizontal"
