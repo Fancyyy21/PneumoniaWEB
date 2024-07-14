@@ -1,8 +1,4 @@
-streamlit==1.35.0
+streamlit
 tensorflow
 pillow
 numpy
-streamlit-folium
-folium
-scikit-image
-streamlit_option_menu

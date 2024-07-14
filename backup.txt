@@ -1,0 +1,15 @@
+streamlit
+tensorflow
+pillow
+numpy
+
+
+
+streamlit==1.35.0
+tensorflow
+pillow
+numpy
+streamlit-folium
+folium
+scikit-image
+streamlit_option_menu
