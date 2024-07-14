@@ -88,8 +88,10 @@ selected = option_menu(
     orientation="horizontal"
 )
 
+
+
 if selected == "Beranda":
-    st.title("Selamat Datang di Deteksi Pneumoniaaaaa")
+    st.title("Selamat Datang di Deteksi Pneumonia")
     st.write("""
     Aplikasi web ini menggunakan pembelajaran mesin untuk memprediksi pneumonia dari gambar X-ray dada.
     
