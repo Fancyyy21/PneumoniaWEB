@@ -5,3 +5,4 @@ numpy
 streamlit-folium
 folium
 scikit-image
+streamlit_option_menu
