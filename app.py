@@ -15,7 +15,7 @@ model = load_model('prediksi_pneumonia.h5')
 # Function to load and preprocess the image
 def load_and_preprocess_image(file):
     try:
-        img = image.load_img(file, target_size=(150, 150))  # Adjust target size if necessary
+        img = image.load_img(file, target_size=(150, 150))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         x /= 255.0  # Normalize the image data
@@ -129,41 +129,36 @@ if selected == "Beranda":
     """)
 
 
-if selected == "Prediksi":
+elif selected == "Prediksi":
     st.title("Deteksi Pneumonia")
     st.write("Unggah gambar X-ray dada untuk mendapatkan prediksi.")
-
+    
     # File uploader
-    file = st.file_uploader("Upload Gambar Yang Ingin Diprediksi", type=["jpg", "jpeg", "png"])
-
+    file = st.file_uploader("Upload Gambar X-ray Dada", type=["jpg", "jpeg", "png"])
+    
     if file is not None:
-        try:
-            file_path = os.path.join("uploads", file.name)
-            with open(file_path, "wb") as f:
-                f.write(file.getbuffer())
-            
-            st.image(file_path, caption='Uploaded Image', use_column_width=True)
-            st.write("")
-            st.write("Hasil Prediksi :")
-            prediction, description, probabilities = predict_image(file_path)
-            
-            if prediction:
-                if prediction == "Normal":
-                    st.success(f"Prediction: {prediction}")
-                    st.sidebar.success(f"Prediksi: {prediction}")
-                else:
-                    st.error(f"Prediction: {prediction}")
-                    st.sidebar.error(f"Prediksi: {prediction}")
-                
-                st.write(description)
-
-                # Display prediction probabilities in the sidebar
-                st.sidebar.write("### Probabilitas Prediksi")
-                st.sidebar.write(f"- Normal: {probabilities[0]:.2f}")
-                st.sidebar.write(f"- Pneumonia: {probabilities[1]:.2f}")
+        file_path = os.path.join("uploads", file.name)
+        with open(file_path, "wb") as f:
+            f.write(file.getbuffer())
+        st.image(file_path, caption='Gambar yang Diunggah', use_column_width=True)
+        st.write("")
+        st.write("Hasil Prediksi:")
+        prediction, description, probabilities = predict_image(file_path)
         
-        except Exception as e:
-            st.error(f"Error during prediction or file handling: {e}")
+        if prediction:
+            if prediction == "Normal":
+                st.success(f"Prediksi: {prediction}")
+                st.sidebar.success(f"Prediksi: {prediction}")
+            else:
+                st.error(f"Prediksi: {prediction}")
+                st.sidebar.error(f"Prediksi: {prediction}")
+            
+            st.write(description)
+            
+            # Tampilkan probabilitas prediksi di sidebar
+            st.sidebar.write("### Probabilitas Prediksi")
+            st.sidebar.write(f"- Normal: {probabilities[0]:.2f}")
+            st.sidebar.write(f"- Pneumonia: {probabilities[1]:.2f}")
 
 
 if selected == "Kontak":
